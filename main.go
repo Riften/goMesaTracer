@@ -7,6 +7,7 @@ import "C"
 import (
 	"fmt"
 	"github.com/Riften/goMesaTracer/tracer"
+	"time"
 )
 
 var FlagMap = make(map[C.int]string)
@@ -54,6 +55,13 @@ func init() {
 			}
 		}
 	}()
+}
+
+//export cgoStopAndWait
+func cgoStopAndWait() {
+	// TODO: End the writer routine and write back logs
+	time.Sleep(2 * time.Second) // wait for 2 minute
+	return
 }
 
 func main() {

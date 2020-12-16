@@ -6,6 +6,6 @@ int main() {
     //cgoAddString("test");
     cgoTestEnum(CGO_START);
     cgoTestEnum(CGO_END);
-    sleep(3);
+    cgoStopAndWait();
     return 0;
 }

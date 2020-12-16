@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 int main() {
-    //cgoAddString("test");
+    cgoAddString("test");
     cgoTestEnum(CGO_START);
     cgoTestEnum(CGO_END);
     cgoStopAndWait();

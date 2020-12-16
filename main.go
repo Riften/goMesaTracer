@@ -25,7 +25,7 @@ func init() {
 		filePath = defaultOutFile
 	}
 
-	tracer.GlobalTracer.W, err = os.OpenFile(os.Getenv("MESA_TRACE_OUT"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 644)
+	tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 644)
 	if err != nil {
 		fmt.Println("Error when open output file: ", err.Error())
 		panic(err)

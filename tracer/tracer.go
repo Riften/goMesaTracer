@@ -12,8 +12,12 @@ func (t Tracer) tryAddTrace(str string) {
 	t.recv <- str
 }
 
+func (t Tracer) OutCh() chan string {
+	return t.recv
+}
+
 //export cgoTryAddTrace
 func cgoTryAddTrace(str *C.char) {
 	gstr := C.GoString(str)
-	tracer
+	GlobalTracer.tryAddTrace(gstr)
 }

@@ -46,6 +46,7 @@ func (t Tracer) AddRecord(cgoType int) {
 }
 
 func (t Tracer) WriteRaw(r *Record) {
+
 	// counter cgotype timestamp
 	_, err := t.W.Write([]byte(fmt.Sprintf("%d %d %d\n", r.Counter, r.CgoType, r.TimeStamp)))
 	if err != nil {

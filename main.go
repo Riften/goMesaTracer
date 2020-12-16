@@ -2,6 +2,12 @@ package main
 /*
 #define CGO_START 0
 #define CGO_END 1
+#define GLM2_DRAW_BEGIN 2
+#define GLM2_DRAW_END 3
+#define GLM2_STEP_BEGIN 4
+#define GLM2_STEP_END 5
+#define GLM2_UPDATE_BEGIN 6
+#define GLM2_UPDATE_END 7
 */
 import "C"
 import (
@@ -34,6 +40,12 @@ func init() {
 	fmt.Println("Init flag map.")
 	FlagMap[C.CGO_START] = "Trace_Start"
 	FlagMap[C.CGO_END] = "Trace_End"
+	FlagMap[C.GLM2_DRAW_BEGIN] = "GLM2_DRAW_BEGIN"
+	FlagMap[C.GLM2_DRAW_END] = "GLM2_DRAW_END"
+	FlagMap[C.GLM2_STEP_BEGIN] = "GLM2_STEP_BEGIN"
+	FlagMap[C.GLM2_STEP_END] = "GLM2_STEP_END"
+	FlagMap[C.GLM2_UPDATE_BEGIN] = "GLM2_UPDATE_BEGIN"
+	FlagMap[C.GLM2_UPDATE_END] = "GLM2_UPDATE_END"
 }
 
 
@@ -51,6 +63,7 @@ func cgoAddTrace(cgoType C.int) {
 //export cgoStopAndWait
 func cgoStopAndWait() {
 	// TODO: End the writer routine and write back logs
+	tracer.GlobalTracer.End()
 	time.Sleep(2 * time.Second) // wait for 2 minute
 	return
 }

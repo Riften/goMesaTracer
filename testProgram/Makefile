@@ -1,3 +1,3 @@
 .PHONY: test
 test:
-	gcc main.c -o test
+	gcc main.c -o ../build/test

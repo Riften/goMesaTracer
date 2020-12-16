@@ -8,7 +8,7 @@ type Tracer struct {
 
 var GlobalTracer Tracer = Tracer{recv: make(chan string, 10)}
 
-func (t Tracer) tryAddTrace(str string) {
+func (t Tracer) TryAddTrace(str string) {
 	t.recv <- str
 }
 
@@ -19,5 +19,5 @@ func (t Tracer) OutCh() chan string {
 //export cgoTryAddTrace
 func cgoTryAddTrace(str *C.char) {
 	gstr := C.GoString(str)
-	GlobalTracer.tryAddTrace(gstr)
+	GlobalTracer.TryAddTrace(gstr)
 }

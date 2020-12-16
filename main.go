@@ -27,7 +27,7 @@ func init() {
 
 //export cgoAddTrace
 func cgoAddTrace(cgoType C.int) {
-	tracer.GlobalTracer.AddRecord(cgoType)
+	tracer.GlobalTracer.AddRecord(int(cgoType))
 }
 
 //export cgoStopAndWait

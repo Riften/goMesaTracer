@@ -3,9 +3,14 @@
 #include <unistd.h>
 
 int main() {
-    cgoAddString("test");
-    cgoTestEnum(CGO_START);
-    cgoTestEnum(CGO_END);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_START);
+    cgoAddTrace(CGO_END);
     cgoStopAndWait();
     return 0;
 }

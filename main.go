@@ -48,6 +48,8 @@ func init() {
 	FlagMap[C.GLM2_STEP_END] = "GLM2_STEP_END"
 	FlagMap[C.GLM2_UPDATE_BEGIN] = "GLM2_UPDATE_BEGIN"
 	FlagMap[C.GLM2_UPDATE_END] = "GLM2_UPDATE_END"
+	FlagMap[C.ZINK_DRAW_BEGIN] = "ZINK_DRAW_BEGIN"
+	FlagMap[C.ZINK_DRAW_END] = "ZINK_DRAW_END"
 }
 
 // Initialize the routine used for record trace

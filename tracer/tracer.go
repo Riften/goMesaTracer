@@ -67,6 +67,14 @@ func (t Tracer) Start() {
 		default:
 			select {
 			case data := <- t.Recv:
+
+				// TODO: Remove this when it seems that 1000 is enough for channel buffer
+				if data.Counter % 100 == 0 {
+					if len(t.Recv) > 500 {
+						fmt.Println("Warning: half of tracer buffer is full.")
+					}
+				}
+
 				t.WriteRaw(data)
 			case <- t.Endch:
 				fmt.Println("Tracer routine end.")

@@ -8,6 +8,8 @@ package main
 #define GLM2_STEP_END 5
 #define GLM2_UPDATE_BEGIN 6
 #define GLM2_UPDATE_END 7
+#define ZINK_DRAW_BEGIN 8
+#define ZINK_DRAW_END 9
 */
 import "C"
 import (
@@ -19,7 +21,7 @@ import (
 
 const defaultOutFile = "mesa_trace_raw.csv"
 
-var FlagMap = make(map[C.int]string)
+var FlagMap = make([]string, 100)
 
 func init() {
 	var err error
@@ -68,6 +70,9 @@ func cgoStopAndWait() {
 }
 
 func main() {
-
+	err := Run()
+	if err != nil {
+		fmt.Println("Error in cmd: ", err)
+	}
 	return
 }

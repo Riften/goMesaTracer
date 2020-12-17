@@ -1,6 +1,8 @@
 # goMesaTracer
 A tracer and analyzer for glmark2 and mesa writen in golang.
 
+中文完整工具目的、使用见[笔记](https://github.com/Riften/OpenGL-Notes/blob/master/TraceMesa.md)。
+
 ## Build Shared Library
 **Linux Only**
 

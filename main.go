@@ -48,7 +48,6 @@ func init() {
 	FlagMap[C.GLM2_UPDATE_END] = "GLM2_UPDATE_END"
 }
 
-
 // Initialize the routine used for record trace
 func init() {
 	fmt.Println("Initialize main routine")

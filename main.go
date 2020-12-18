@@ -10,6 +10,10 @@ package main
 #define GLM2_UPDATE_END 7
 #define ZINK_DRAW_BEGIN 8
 #define ZINK_DRAW_END 9
+#define MESA_SET_DRAW_VAO_BEGIN 10
+#define MESA_SET_DRAW_VAO_END 11
+#define FLUSH_FOR_DRAW_BEGIN 12
+#define FLUSH_FOR_DRAW_END 13
 */
 import "C"
 import (
@@ -50,6 +54,10 @@ func init() {
 	FlagMap[C.GLM2_UPDATE_END] = "GLM2_UPDATE_END"
 	FlagMap[C.ZINK_DRAW_BEGIN] = "ZINK_DRAW_BEGIN"
 	FlagMap[C.ZINK_DRAW_END] = "ZINK_DRAW_END"
+	FlagMap[C.MESA_SET_DRAW_VAO_BEGIN] = "MESA_SET_DRAW_VAO_BEGIN"
+	FlagMap[C.MESA_SET_DRAW_VAO_END] = "MESA_SET_DRAW_VAO_END"
+	FlagMap[C.FLUSH_FOR_DRAW_BEGIN] = "FLUSH_FOR_DRAW_BEGIN"
+	FlagMap[C.FLUSH_FOR_DRAW_END] = "FLUSH_FOR_DRAW_END"
 }
 
 // Initialize the routine used for record trace

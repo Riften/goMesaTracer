@@ -143,7 +143,7 @@ func (st *stacker) peekTrace() *stackTrace {
 
 // Used to analyze the call stack from trace
 func cmdStack(inputPath string, outPath string) error {
-	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, os.ModePerm)
+	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Println("Error when open input trace file: ", err)
 		return err
@@ -157,7 +157,7 @@ func cmdStack(inputPath string, outPath string) error {
 	}
 	fmt.Println("Call stack will be writen to ", outPath)
 
-	outFile, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	outFile, err := os.OpenFile(outPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		fmt.Println("Error when open output stack file: ", err)
 		return err

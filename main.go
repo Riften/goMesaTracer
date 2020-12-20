@@ -14,6 +14,9 @@ package main
 #define MESA_SET_DRAW_VAO_END 11
 #define FLUSH_FOR_DRAW_BEGIN 12
 #define FLUSH_FOR_DRAW_END 13
+#define MESA_DRAW_ARRAYS_BEGIN 14
+#define MESA_DRAW_ARRAYS_END 15
+
 */
 import "C"
 import (
@@ -58,6 +61,8 @@ func init() {
 	FlagMap[C.MESA_SET_DRAW_VAO_END] = "MESA_SET_DRAW_VAO_END"
 	FlagMap[C.FLUSH_FOR_DRAW_BEGIN] = "FLUSH_FOR_DRAW_BEGIN"
 	FlagMap[C.FLUSH_FOR_DRAW_END] = "FLUSH_FOR_DRAW_END"
+	FlagMap[C.MESA_DRAW_ARRAYS_BEGIN] = "MESA_DRAW_ARRAYS_BEGIN"
+	FlagMap[C.MESA_DRAW_ARRAYS_END] = "MESA_DRAW_ARRAYS_END"
 }
 
 // Initialize the routine used for record trace

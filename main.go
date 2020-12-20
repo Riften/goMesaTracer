@@ -41,7 +41,7 @@ func init() {
 		filePath = defaultOutFile
 	}
 
-	tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		fmt.Println("Error when open output file: ", err.Error())
 		panic(err)

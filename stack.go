@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 )
@@ -18,7 +19,9 @@ type rawTrace struct {
 
 type stackTrace struct {
 	raw *rawTrace
-	depth int
+	depth int	// depth maintain the call stack depth
+	//order int	// order maintain the in-stack order
+				// [deprecated]: this can be done by raw.counter
 	duration int64
 }
 
@@ -44,8 +47,44 @@ type stacker struct {
 	src io.Reader
 	stack *lls.Stack
 
-	writeBuf []*stackTrace
-	bufSize int
+	//writeBuf []*stackTrace
+	//bufSize int
+	writeBuf *stackWriteBuf
+}
+
+// NOT THREAD SAFE!!
+type stackWriteBuf struct {
+	buf []*stackTrace
+	size int
+	// out io.Writer
+}
+
+func (wf *stackWriteBuf) add(st *stackTrace) {
+	wf.buf[wf.size] = st
+	wf.size += 1
+}
+
+// Let stackWriteBuf sortable
+func (wf *stackWriteBuf) Len() int {
+	return wf.size
+}
+
+func (wf *stackWriteBuf) Swap(i, j int) {
+	wf.buf[i], wf.buf[j] = wf.buf[j], wf.buf[i]
+}
+
+func (wf *stackWriteBuf) Less(i, j int) bool {
+	return wf.buf[i].raw.count < wf.buf[j].raw.count
+}
+
+func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
+	sort.Sort(wf)
+	var curTrace *stackTrace
+	for ; wf.size>0; wf.size-=1 {
+		curTrace = wf.buf[wf.size-1]
+		fmt.Println("...", FlagMap[curTrace.raw.cgoType])
+		handleWrite(curTrace)
+	}
 }
 
 func (st *stacker) writeLn(str string) {
@@ -68,16 +107,6 @@ func (st *stacker) writeTrace(tr *stackTrace) {
 
 func (st *stacker) analyze() {
 	scanTrace(st.src, st.handleRawTrace)
-}
-
-func (st *stacker) Flush() {
-	fmt.Println("Flush")
-	var curTrace *stackTrace
-	for ; st.bufSize>0; st.bufSize-=1 {
-		curTrace = st.writeBuf[st.bufSize-1]
-		fmt.Println("...", FlagMap[curTrace.raw.cgoType])
-		st.writeTrace(curTrace)
-	}
 }
 
 func (st *stacker) handleRawTrace(r *rawTrace) {
@@ -121,11 +150,12 @@ func (st *stacker) handleRawTrace(r *rawTrace) {
 				// Trace matched
 				st.stack.Pop()
 				peekt.duration = r.nano - peekt.raw.nano
-				st.writeBuf[st.bufSize] = peekt
-				st.bufSize += 1
+				st.writeBuf.add(peekt)
+				//st.writeBuf[st.bufSize] = peekt
+				//st.bufSize += 1
 
 				if st.stack.Empty() {
-					st.Flush()
+					st.writeBuf.flush(st.writeTrace)
 				}
 				break
 			}
@@ -167,9 +197,12 @@ func cmdStack(inputPath string, outPath string) error {
 		dest:  outFile,
 		src:   inFile,
 		stack: lls.New(),
-		writeBuf: make([]*stackTrace, 1000),
-		bufSize: 0,
+		writeBuf: &stackWriteBuf{
+			buf:  make([]*stackTrace, 1000),
+			size: 0,
+		},
 	}
+
 	st.analyze()
 
 	inFile.Close()

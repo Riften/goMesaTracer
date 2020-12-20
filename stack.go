@@ -60,7 +60,7 @@ func (st *stacker) writeTrace(tr *stackTrace) {
 	if err != nil {
 		fmt.Println("Error when write to stacker dest: ", err)
 	}
-	_, err = st.dest.Write([]byte(fmt.Sprintf("%s %d\n", FlagMap[tr.raw.cgoType], tr.duration)))
+	_, err = st.dest.Write([]byte(fmt.Sprintf("%s %d\n", strings.TrimSuffix(FlagMap[tr.raw.cgoType], "_BEGIN"), tr.duration)))
 	if err != nil {
 		fmt.Println("Error when write to stacker dest: ", err)
 	}

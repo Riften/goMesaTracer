@@ -16,7 +16,8 @@ package main
 #define FLUSH_FOR_DRAW_END 13
 #define MESA_DRAW_ARRAYS_BEGIN 14
 #define MESA_DRAW_ARRAYS_END 15
-
+#define ST_DRAW_VBO_BEGIN 16
+#define ST_DRAW_VBO_END 17
 */
 import "C"
 import (

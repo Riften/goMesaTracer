@@ -1,6 +1,7 @@
 if [ -n "$GLM2_REPO_DIR" ]; then
 	echo "Inject header to glmark2 at ${GLM2_REPO_DIR}"
 	pathlist=("${GLM2_REPO_DIR}/src/")
+	# shellcheck disable=SC2068
 	for p in ${pathlist[@]}
 	do
 		echo "...Inject to ${p}"

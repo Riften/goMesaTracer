@@ -79,12 +79,11 @@ func (wf *stackWriteBuf) Less(i, j int) bool {
 
 func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
 	sort.Sort(wf)
-	var curTrace *stackTrace
-	for ; wf.size>0; wf.size-=1 {
-		curTrace = wf.buf[wf.size-1]
-		fmt.Println("...", FlagMap[curTrace.raw.cgoType])
-		handleWrite(curTrace)
+	for i:=0 ; i<wf.size; i+=1{
+		//fmt.Println("...", FlagMap[curTrace.raw.cgoType])
+		handleWrite(wf.buf[i])
 	}
+	wf.size = 0
 }
 
 func (st *stacker) writeLn(str string) {
@@ -117,6 +116,11 @@ func (st *stacker) handleRawTrace(r *rawTrace) {
 	if r.cgoType == 1 {
 		st.writeLn(FlagMap[1])
 		return
+	}
+
+	// monitor stack process:
+	if r.count % 100 == 0 {
+		fmt.Printf("Process line %d\r", r.count)
 	}
 
 	if r.cgoType % 2 == 0 {

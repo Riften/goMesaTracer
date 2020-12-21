@@ -38,6 +38,8 @@ package main
 #define ST_FLUSH_END 35
 #define GAL_TC_FLUSH_BEGIN 36
 #define GAL_TC_FLUSH_END 37
+#define GAL_DRI_FLUSH_BEGIN 38
+#define GAL_DRI_FLUSH_END 39
 */
 import "C"
 import (
@@ -106,6 +108,8 @@ func init() {
 	FlagMap[C.ST_FLUSH_END] = "ST_FLUSH_END"
 	FlagMap[C.GAL_TC_FLUSH_BEGIN] = "GAL_TC_FLUSH_BEGIN"
 	FlagMap[C.GAL_TC_FLUSH_END] = "GAL_TC_FLUSH_END"
+	FlagMap[C.GAL_DRI_FLUSH_BEGIN] = "GAL_DRI_FLUSH_BEGIN"
+	FlagMap[C.GAL_DRI_FLUSH_END] = "GAL_DRI_FLUSH_END"
 }
 
 // Initialize the routine used for record trace

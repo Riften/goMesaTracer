@@ -42,6 +42,8 @@ package main
 #define GAL_DRI_FLUSH_END 39
 #define GAL_DRI_THRO_PRE_BEGIN 40
 #define GAL_DRI_THRO_PRE_END 41
+#define MESA_CLEAR_BEGIN 42
+#define MESA_CLEAR_END 43
 */
 import "C"
 import (
@@ -52,8 +54,9 @@ import (
 )
 
 const defaultOutFile = "mesa_trace_raw.csv"
+const totalFlag = 100
 
-var FlagMap = make([]string, 100)
+var FlagMap = make([]string, totalFlag)
 
 func init() {
 	var err error
@@ -114,6 +117,8 @@ func init() {
 	FlagMap[C.GAL_DRI_FLUSH_END] = "GAL_DRI_FLUSH_END"
 	FlagMap[C.GAL_DRI_THRO_PRE_BEGIN] = "GAL_DRI_THRO_PRE_BEGIN"
 	FlagMap[C.GAL_DRI_THRO_PRE_END] = "GAL_DRI_THRO_PRE_END"
+	FlagMap[C.MESA_CLEAR_BEGIN] = "MESA_CLEAR_BEGIN"
+	FlagMap[C.MESA_CLEAR_END] = "MESA_CLEAR_END"
 }
 
 // Initialize the routine used for record trace

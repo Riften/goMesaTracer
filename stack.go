@@ -23,6 +23,36 @@ type stackTrace struct {
 	//order int	// order maintain the in-stack order
 				// [deprecated]: this can be done by raw.counter
 	duration int64
+	startTime int64
+	endTime int64
+}
+
+type stackStatistic struct {
+	calls []callStatistic
+	startTime int64
+	endTime int64
+	busyTime int64
+}
+
+type callStatistic struct {
+	count int
+	totalDuration int64
+	avgDuration int64
+}
+
+func newStackStatistic() *stackStatistic {
+	_calls := make([]callStatistic, totalFlag)
+	for _, c := range _calls {
+		c.totalDuration = 0
+		c.count = 0
+		c.avgDuration = 0
+	}
+	return &stackStatistic{
+		calls:     _calls,
+		startTime: 0,
+		endTime:   0,
+		busyTime:  0,
+	}
 }
 
 func scanTrace(r io.Reader, handler func(trace *rawTrace)) {
@@ -50,6 +80,7 @@ type stacker struct {
 	//writeBuf []*stackTrace
 	//bufSize int
 	writeBuf *stackWriteBuf
+	stStatistic *stackStatistic
 }
 
 // NOT THREAD SAFE!!
@@ -85,6 +116,13 @@ func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
 	}
 	wf.size = 0
 }
+/*
+type flushWriteBuf func(buf *stackWriteBuf)
+
+func (st *stacker) flushBuf(buf *stackWriteBuf) {
+
+}
+ */
 
 func (st *stacker) writeLn(str string) {
 	_, err := st.dest.Write([]byte(str+"\n"))
@@ -136,6 +174,7 @@ func (st *stacker) handleRawTrace(r *rawTrace) {
 			raw:      r,
 			depth:    dep,
 			duration: 0, 	// duration is computed when pop stack
+			startTime: r.nano,
 		})
 	} else {
 		for	{
@@ -154,6 +193,7 @@ func (st *stacker) handleRawTrace(r *rawTrace) {
 				// Trace matched
 				st.stack.Pop()
 				peekt.duration = r.nano - peekt.raw.nano
+				peekt.endTime = r.nano
 				st.writeBuf.add(peekt)
 				//st.writeBuf[st.bufSize] = peekt
 				//st.bufSize += 1

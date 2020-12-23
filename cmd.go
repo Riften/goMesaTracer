@@ -17,10 +17,17 @@ func Run() error {
 	cmds := make(cmdMap)
 
 	stackCmd := appCmd.Command("stack", "Reconstruct the call stack from trace.")
-	stackInFile := appCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
-	stackOutFile := appCmd.Flag("output", "Out stack file.").Short('o').String()
+	stackInFile := stackCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	stackOutFile := stackCmd.Flag("output", "Out stack file.").Short('o').String()
 	cmds[stackCmd.FullCommand()] = func() error {
 		return cmdStack(*stackInFile, *stackOutFile)
+	}
+
+	statisticCmd := appCmd.Command("statistic", "Statistics average duration for different calls.")
+	statisticInFile := statisticCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	statisticOutFile := statisticCmd.Flag("output", "Out statistic result.").Short('o').String()
+	cmds[statisticCmd.FullCommand()] = func() error {
+		return cmdStatistic(*statisticInFile, *statisticOutFile)
 	}
 
 	cmd := kingpin.MustParse(appCmd.Parse(os.Args[1:]))

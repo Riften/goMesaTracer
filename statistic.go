@@ -107,7 +107,7 @@ func cmdStatistic(inputPath string, outPath string) error {
 	if outPath == "" {
 		inputSuffix := path.Ext(inputPath)
 		withoutSuffix := strings.TrimSuffix(inputPath, inputSuffix)
-		outPath = withoutSuffix + "_statistic.txt"
+		outPath = withoutSuffix + "_statistic.md"
 		fmt.Println("No outPath specified. Out to default file ", outPath)
 	}
 	fmt.Println("Call statisthc will be writen to ", outPath)

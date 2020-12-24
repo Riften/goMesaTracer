@@ -25,7 +25,7 @@ func (st *stacker) statistic(){
 			st.writeLn(fmt.Sprintf("%s | %d | %s | %d ns | %f%%",
 				strings.TrimSuffix(FlagMap[cgoType], "_BEGIN"),
 				c.count,
-				time.Unix(0, c.totalDuration).String(),
+				time.Duration(c.totalDuration).String(),
 				c.totalDuration/int64(c.count),
 				100*float64(c.totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
 		}

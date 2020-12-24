@@ -37,9 +37,13 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 		st.stStatistic.endTime = r.nano
 	}
 
-	if r.cgoType == 0 {
-		//st.writeLn(FlagMap[0])
+	if st.stStatistic.startTime == 0 {
 		st.stStatistic.startTime = r.nano
+	}
+
+	if r.cgoType == 0 {
+		// st.writeLn(FlagMap[0])
+		// st.stStatistic.startTime = r.nano
 		return
 	}
 	if r.cgoType == 1 {

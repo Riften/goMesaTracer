@@ -28,6 +28,9 @@ type Tracer struct {
 	Recv chan *Record
 	W io.Writer
 	Endch chan interface{}
+	OutCmdOnly bool		// Whether print the trace to command line only.
+						// It would be true if the os environment MESA_TRACE_CMD_ONLY is not empty.
+	FetchFlagName func(int) string	// Used to fetch name string of cgoType.
 }
 
 // Make the buffer large enough so that the tracer would not block the main thread.
@@ -52,6 +55,10 @@ func (t Tracer) WriteRaw(r *Record) {
 	if err != nil {
 		fmt.Println("Error when write record back: ", err.Error())
 	}
+}
+
+func (t Tracer) WriteCmd(r *Record) {
+	fmt.Printf("%d %s %d\n", r.Counter, t.FetchFlagName(r.CgoType), r.TimeStamp)
 }
 
 // Call Start in a separate goroutine.

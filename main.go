@@ -77,17 +77,24 @@ var FlagMap = make([]string, totalFlag)
 func init() {
 	var err error
 
-	filePath := os.Getenv("MESA_TRACE_OUT")
-	if filePath == "" {
-		fmt.Println("No out file specified, use default out file ", defaultOutFile)
-		fmt.Println("You can set the out file by os env MESA_TRACE_OUT")
-		filePath = defaultOutFile
-	}
+	mesaCmdOnly := os.Getenv("MESA_TRACE_CMD_ONLY")
+	if mesaCmdOnly != "" {
+		tracer.GlobalTracer.OutCmdOnly = true
+		fmt.Println("Cgo trace would be print out to command line only")
+	} else {
+		tracer.GlobalTracer.OutCmdOnly = false
+		filePath := os.Getenv("MESA_TRACE_OUT")
+		if filePath == "" {
+			fmt.Println("No out file specified, use default out file ", defaultOutFile)
+			fmt.Println("You can set the out file by os env MESA_TRACE_OUT")
+			filePath = defaultOutFile
+		}
 
-	tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	if err != nil {
-		fmt.Println("Error when open output file: ", err.Error())
-		panic(err)
+		tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+		if err != nil {
+			fmt.Println("Error when open output file: ", err.Error())
+			panic(err)
+		}
 	}
 
 	fmt.Println("Init flag map.")
@@ -151,6 +158,10 @@ func init() {
 	FlagMap[C.MESA_VBO_DATA_END] = "MESA_VBO_DATA_END"
 	FlagMap[C.MESA_VERTEX_ATTRIB_POINTER_BEGIN] = "MESA_VERTEX_ATTRIB_POINTER_BEGIN"
 	FlagMap[C.MESA_VERTEX_ATTRIB_POINTER_END] = "MESA_VERTEX_ATTRIB_POINTER_END"
+
+	tracer.GlobalTracer.FetchFlagName = func(cgoType int) string {
+		return FlagMap[cgoType]
+	}
 }
 
 // Initialize the routine used for record trace

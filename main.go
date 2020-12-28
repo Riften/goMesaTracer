@@ -162,10 +162,6 @@ func init() {
 	tracer.GlobalTracer.FetchFlagName = func(cgoType int) string {
 		return FlagMap[cgoType]
 	}
-}
-
-// Initialize the routine used for record trace
-func init() {
 	fmt.Println("Initialize main routine")
 	go tracer.GlobalTracer.Start()
 }

@@ -67,10 +67,16 @@ func (t Tracer) WriteCmd(r *Record) {
 //		So Recv and Endch works as two priority queue.
 func (t Tracer) Start() {
 	fmt.Println("Tracer routine start.")
+	var writeFunc func(*Record)
+	if t.OutCmdOnly {
+		writeFunc = t.WriteCmd
+	} else {
+		writeFunc = t.WriteRaw
+	}
 	for {
 		select {
 		case data := <- t.Recv:
-			t.WriteRaw(data)
+			writeFunc(data)
 		default:
 			select {
 			case data := <- t.Recv:
@@ -81,8 +87,8 @@ func (t Tracer) Start() {
 						fmt.Println("Warning: half of tracer buffer is full.")
 					}
 				}
+				writeFunc(data)
 
-				t.WriteRaw(data)
 			case <- t.Endch:
 				fmt.Println("Tracer routine end.")
 				return

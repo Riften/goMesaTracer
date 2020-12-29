@@ -30,6 +30,13 @@ func Run() error {
 		return cmdStatistic(*statisticInFile, *statisticOutFile)
 	}
 
+	filterCmd := appCmd.Command("filter", "Filter the raw trace.")
+	filterInFile := filterCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	filterOutFile := filterCmd.Flag("output", "Out filtered trace file").Short('o').String()
+	cmds[filterCmd.FullCommand()] = func() error {
+		return cmdFilter(*filterInFile, *filterOutFile)
+	}
+
 	cmd := kingpin.MustParse(appCmd.Parse(os.Args[1:]))
 	for key, value := range cmds {
 		if key == cmd {

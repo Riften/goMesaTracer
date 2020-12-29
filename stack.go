@@ -132,7 +132,7 @@ func (st *stacker) writeLn(str string) {
 }
 
 func (st *stacker) writeTrace(tr *stackTrace) {
-	_, err := st.dest.Write([]byte(strings.Repeat("\t", tr.depth)))
+	_, err := st.dest.Write([]byte(strings.Repeat("  ", tr.depth)))
 	if err != nil {
 		fmt.Println("Error when write to stacker dest: ", err)
 	}

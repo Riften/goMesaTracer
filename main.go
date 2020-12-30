@@ -66,6 +66,8 @@ package main
 #define GLM2_CANVAS_UPDATE_END 63
 #define ZINK_FENCE_FINISH_BEGIN 64
 #define ZINK_FENCE_FINISH_END 65
+#define VK_WAIT_FENCES_BEGIN 66
+#define VK_WAIT_FENCES_END 67
 */
 import "C"
 import (
@@ -170,6 +172,8 @@ func init() {
 	FlagMap[C.GLM2_CANVAS_UPDATE_END] = "GLM2_CANVAS_UPDATE_END"
 	FlagMap[C.ZINK_FENCE_FINISH_BEGIN] = "ZINK_FENCE_FINISH_BEGIN"
 	FlagMap[C.ZINK_FENCE_FINISH_END] = "ZINK_FENCE_FINISH_END"
+	FlagMap[C.VK_WAIT_FENCES_BEGIN] = "VK_WAIT_FENCES_BEGIN"
+	FlagMap[C.VK_WAIT_FENCES_END] = "VK_WAIT_FENCES_END"
 
 	tracer.GlobalTracer.FetchFlagName = func(cgoType int) string {
 		return FlagMap[cgoType]

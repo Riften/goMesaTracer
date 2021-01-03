@@ -37,6 +37,13 @@ func Run() error {
 		return cmdFilter(*filterInFile, *filterOutFile)
 	}
 
+	translateCmd := appCmd.Command("translate", "Translate flags into names.")
+	transInFile := translateCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	transOutFile := translateCmd.Flag("output", "Out filtered trace file").Short('o').String()
+	cmds[translateCmd.FullCommand()] = func() error {
+		return cmdTranslate(*transInFile, *transOutFile)
+	}
+
 	cmd := kingpin.MustParse(appCmd.Parse(os.Args[1:]))
 	for key, value := range cmds {
 		if key == cmd {

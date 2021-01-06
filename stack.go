@@ -81,6 +81,9 @@ type stacker struct {
 	//bufSize int
 	writeBuf *stackWriteBuf
 	stStatistic *stackStatistic
+
+	firstCallToCompare string
+	secondCallToCompare string
 }
 
 // NOT THREAD SAFE!!

@@ -26,8 +26,10 @@ func Run() error {
 	statisticCmd := appCmd.Command("statistic", "Statistics average duration for different calls.")
 	statisticInFile := statisticCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
 	statisticOutFile := statisticCmd.Flag("output", "Out statistic result.").Short('o').String()
+	statisticCallToCompare1 := statisticCmd.Flag("call1", "The first call to compare.").Short('f').Default(defaultCallToCompare).String()
+	statisticCallToCompare2 := statisticCmd.Flag("call2", "The second call to compare").Short('s').String()
 	cmds[statisticCmd.FullCommand()] = func() error {
-		return cmdStatistic(*statisticInFile, *statisticOutFile)
+		return cmdStatistic(*statisticInFile, *statisticOutFile, *statisticCallToCompare1, *statisticCallToCompare2)
 	}
 
 	filterCmd := appCmd.Command("filter", "Filter the raw trace.")

@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+func getCallTypeFromName(callName string) int {
+	for cgoType, name := range FlagMap {
+		if strings.TrimSuffix(name, "_BEGIN") == callName {
+			return cgoType
+		}
+	}
+	return -1
+}
+
 func (st *stacker) statistic(){
 	scanTrace(st.src, st.statisticRawTrace)
 	st.writeLn("## Basic infos")
@@ -30,6 +39,29 @@ func (st *stacker) statistic(){
 				100*float64(c.totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
 		}
 	}
+	st.writeLn("")
+}
+
+func (st *stacker) comparison(){
+	firstCallType := getCallTypeFromName(st.firstCallToCompare)
+	secondCallType := getCallTypeFromName(st.secondCallToCompare)
+	if firstCallType == -1 || secondCallType == -1 {
+		fmt.Println("The calls to be compared not found!")
+		return
+	}
+	st.writeLn(fmt.Sprintf("## Info for call comparison between %s and %s", st.firstCallToCompare, st.secondCallToCompare))
+	st.writeLn(fmt.Sprintf("- Duration: %s / %s = %f",
+		st.firstCallToCompare,
+		st.secondCallToCompare,
+		float64(st.stStatistic.calls[firstCallType].totalDuration)/float64(st.stStatistic.calls[secondCallType].totalDuration)))
+	st.writeLn(fmt.Sprintf("- Count: %s / %s = %f",
+		st.firstCallToCompare,
+		st.secondCallToCompare,
+		float64(st.stStatistic.calls[firstCallType].count)/float64(st.stStatistic.calls[secondCallType].count)))
+	st.writeLn(fmt.Sprintf("- Duration: %s / Total = %f%%",
+		st.firstCallToCompare,
+		100*float64(st.stStatistic.calls[firstCallType].totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
+
 }
 
 func (st *stacker) statisticRawTrace(r *rawTrace) {
@@ -101,7 +133,9 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 	}
 }
 
-func cmdStatistic(inputPath string, outPath string) error {
+const defaultCallToCompare = "GLX_SWAP_BUFFERS"
+
+func cmdStatistic(inputPath string, outPath string, callToCompare1 string, callToCompare2 string) error {
 	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Println("Error when open input trace file: ", err)
@@ -131,9 +165,18 @@ func cmdStatistic(inputPath string, outPath string) error {
 			size: 0,
 		},
 		stStatistic: newStackStatistic(),
+		firstCallToCompare:callToCompare1,
+		secondCallToCompare:callToCompare2,
 	}
 
 	st.statistic()
+
+	// do comparison
+	if callToCompare2 != "" {
+		st.comparison()
+	} else {
+		fmt.Println("No second call to be compared. No comparison to do")
+	}
 
 	inFile.Close()
 	outFile.Close()

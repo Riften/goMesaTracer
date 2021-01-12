@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/Riften/goMesaTracer/common"
 	"io"
 	"os"
 )
@@ -15,7 +16,7 @@ type filter struct {
 
 func newFilterFromReader(src io.Reader) []bool {
 	scanner := bufio.NewScanner(src)
-	res := make([]bool, totalFlag)
+	res := make([]bool, common.TotalFlag)
 	var nScan int
 	var err error
 	var cgoType int

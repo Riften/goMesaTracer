@@ -25,7 +25,12 @@ func scanAndTranslate(input io.Reader, output io.Writer) {
 		} else if n_scan==0 {
 			fmt.Println("Error: Sscanf parsed no param.")
 		} else {
-			_, err = output.Write([]byte(fmt.Sprintf("%9d %s %s",
+
+			if count % 100 == 0 {
+				fmt.Printf("%d\r", count)
+			}
+
+			_, err = output.Write([]byte(fmt.Sprintf("%9d %s %s\n",
 				count,
 				time.Unix(nano/1e9, nano%1e9).Format("15:04:05.000000000"),
 				common.FlagMap[cgoType])))

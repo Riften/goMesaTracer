@@ -84,15 +84,15 @@ package main
 import "C"
 import (
 	"fmt"
+	"github.com/Riften/goMesaTracer/common"
 	"github.com/Riften/goMesaTracer/tracer"
 	"os"
 	"time"
 )
 
-const defaultOutFile = "mesa_trace_raw.csv"
-const totalFlag = 100
 
-var FlagMap = make([]string, totalFlag)
+
+var FlagMap = make([]string, common.TotalFlag)
 
 func init() {
 	var err error
@@ -105,9 +105,9 @@ func init() {
 		tracer.GlobalTracer.OutCmdOnly = false
 		filePath := os.Getenv("MESA_TRACE_OUT")
 		if filePath == "" {
-			fmt.Println("No out file specified, use default out file ", defaultOutFile)
+			fmt.Println("No out file specified, use default out file ", common.DefaultOutFile)
 			fmt.Println("You can set the out file by os env MESA_TRACE_OUT")
-			filePath = defaultOutFile
+			filePath =common.DefaultOutFile
 		}
 
 		tracer.GlobalTracer.W, err = os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)

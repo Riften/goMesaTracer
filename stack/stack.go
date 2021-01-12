@@ -1,14 +1,15 @@
-package main
+package stack
 
 import (
 	"bufio"
 	"fmt"
+	"github.com/Riften/goMesaTracer/common"
+	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 	"io"
 	"os"
 	"path"
 	"sort"
 	"strings"
-	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 )
 
 type rawTrace struct {
@@ -41,7 +42,7 @@ type callStatistic struct {
 }
 
 func newStackStatistic() *stackStatistic {
-	_calls := make([]callStatistic, totalFlag)
+	_calls := make([]callStatistic, common.TotalFlag)
 	for _, c := range _calls {
 		c.totalDuration = 0
 		c.count = 0
@@ -66,9 +67,9 @@ func scanTrace(r io.Reader, handler func(trace *rawTrace)) {
 			fmt.Println("Error when scan line: ", err)
 		} else if n_scan==0 {
 			fmt.Println("Error: Sscanf parsed no param.")
+		} else {
+			handler(tmpRawTrace)
 		}
-
-		handler(tmpRawTrace)
 	}
 }
 
@@ -77,8 +78,6 @@ type stacker struct {
 	src io.Reader
 	stack *lls.Stack
 
-	//writeBuf []*stackTrace
-	//bufSize int
 	writeBuf *stackWriteBuf
 	stStatistic *stackStatistic
 
@@ -119,13 +118,6 @@ func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
 	}
 	wf.size = 0
 }
-/*
-type flushWriteBuf func(buf *stackWriteBuf)
-
-func (st *stacker) flushBuf(buf *stackWriteBuf) {
-
-}
- */
 
 func (st *stacker) writeLn(str string) {
 	_, err := st.dest.Write([]byte(str+"\n"))
@@ -139,7 +131,7 @@ func (st *stacker) writeTrace(tr *stackTrace) {
 	if err != nil {
 		fmt.Println("Error when write to stacker dest: ", err)
 	}
-	_, err = st.dest.Write([]byte(fmt.Sprintf("%s %d\n", strings.TrimSuffix(FlagMap[tr.raw.cgoType], "_BEGIN"), tr.duration)))
+	_, err = st.dest.Write([]byte(fmt.Sprintf("%s %d\n", strings.TrimSuffix(common.FlagMap[tr.raw.cgoType], "_BEGIN"), tr.duration)))
 	if err != nil {
 		fmt.Println("Error when write to stacker dest: ", err)
 	}
@@ -151,11 +143,11 @@ func (st *stacker) analyze() {
 
 func (st *stacker) handleRawTrace(r *rawTrace) {
 	if r.cgoType == 0 {
-		st.writeLn(FlagMap[0])
+		st.writeLn(common.FlagMap[0])
 		return
 	}
 	if r.cgoType == 1 {
-		st.writeLn(FlagMap[1])
+		st.writeLn(common.FlagMap[1])
 		return
 	}
 
@@ -184,13 +176,13 @@ func (st *stacker) handleRawTrace(r *rawTrace) {
 			peekt := st.peekTrace()
 			if peekt == nil {
 				// When the stack is empty
-				fmt.Printf("Stack empty when get %d %s %d\n", r.count, FlagMap[r.cgoType], r.nano)
+				fmt.Printf("Stack empty when get %d %s %d\n", r.count, common.FlagMap[r.cgoType], r.nano)
 				break
 			} else if peekt.raw.cgoType != r.cgoType-1 {
 				// When the top trace mismatch
 				st.stack.Pop()
 				fmt.Printf("Stack mismatch\n\tget %d %s %d\n\tpeek %d %s %d\n",
-					r.count, FlagMap[r.cgoType], r.nano, peekt.raw.count, FlagMap[peekt.raw.cgoType], peekt.raw.nano)
+					r.count, common.FlagMap[r.cgoType], r.nano, peekt.raw.count, common.FlagMap[peekt.raw.cgoType], peekt.raw.nano)
 				continue
 			} else {
 				// Trace matched
@@ -219,7 +211,7 @@ func (st *stacker) peekTrace() *stackTrace {
 }
 
 // Used to analyze the call stack from trace
-func cmdStack(inputPath string, outPath string) error {
+func CmdStack(inputPath string, outPath string) error {
 	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Println("Error when open input trace file: ", err)

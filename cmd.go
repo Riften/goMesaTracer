@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/Riften/goMesaTracer/common"
+	"github.com/Riften/goMesaTracer/stack"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"os"
 )
@@ -17,30 +19,30 @@ func Run() error {
 	cmds := make(cmdMap)
 
 	stackCmd := appCmd.Command("stack", "Reconstruct the call stack from trace.")
-	stackInFile := stackCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	stackInFile := stackCmd.Flag("input", "Input trace file.").Short('i').Default(common.DefaultOutFile).String()
 	stackOutFile := stackCmd.Flag("output", "Out stack file.").Short('o').String()
 	cmds[stackCmd.FullCommand()] = func() error {
-		return cmdStack(*stackInFile, *stackOutFile)
+		return stack.CmdStack(*stackInFile, *stackOutFile)
 	}
 
 	statisticCmd := appCmd.Command("statistic", "Statistics average duration for different calls.")
-	statisticInFile := statisticCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	statisticInFile := statisticCmd.Flag("input", "Input trace file.").Short('i').Default(common.DefaultOutFile).String()
 	statisticOutFile := statisticCmd.Flag("output", "Out statistic result.").Short('o').String()
-	statisticCallToCompare1 := statisticCmd.Flag("call1", "The first call to compare.").Short('f').Default(defaultCallToCompare).String()
+	statisticCallToCompare1 := statisticCmd.Flag("call1", "The first call to compare.").Short('f').Default(common.DefaultCallToCompare).String()
 	statisticCallToCompare2 := statisticCmd.Flag("call2", "The second call to compare").Short('s').String()
 	cmds[statisticCmd.FullCommand()] = func() error {
-		return cmdStatistic(*statisticInFile, *statisticOutFile, *statisticCallToCompare1, *statisticCallToCompare2)
+		return stack.CmdStatistic(*statisticInFile, *statisticOutFile, *statisticCallToCompare1, *statisticCallToCompare2)
 	}
 
 	filterCmd := appCmd.Command("filter", "Filter the raw trace.")
-	filterInFile := filterCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	filterInFile := filterCmd.Flag("input", "Input trace file.").Short('i').Default(common.DefaultOutFile).String()
 	filterOutFile := filterCmd.Flag("output", "Out filtered trace file").Short('o').String()
 	cmds[filterCmd.FullCommand()] = func() error {
 		return cmdFilter(*filterInFile, *filterOutFile)
 	}
 
 	translateCmd := appCmd.Command("translate", "Translate flags into names.")
-	transInFile := translateCmd.Flag("input", "Input trace file.").Short('i').Default(defaultOutFile).String()
+	transInFile := translateCmd.Flag("input", "Input trace file.").Short('i').Default(common.DefaultOutFile).String()
 	transOutFile := translateCmd.Flag("output", "Out filtered trace file").Short('o').String()
 	cmds[translateCmd.FullCommand()] = func() error {
 		return cmdTranslate(*transInFile, *transOutFile)

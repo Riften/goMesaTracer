@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/Riften/goMesaTracer/stack"
 	"os"
 	"path"
 	"strings"
@@ -28,7 +29,7 @@ func cmdTranslate(inputPath string, outPath string) error {
 		return err
 	}
 
-	scanTrace(inFile, func(trace *rawTrace) {
+	stack.scanTrace(inFile, func(trace *stack.rawTrace) {
 		_, err = outFile.WriteString(fmt.Sprintf("%d %s %d\n", trace.count, FlagMap[trace.cgoType], trace.nano))
 		if err != nil {
 			fmt.Println("Error when write to translated file: ", err)

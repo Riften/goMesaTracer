@@ -1,7 +1,8 @@
-package main
+package stack
 
 import (
 	"fmt"
+	"github.com/Riften/goMesaTracer/common"
 	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 	"os"
 	"path"
@@ -10,7 +11,7 @@ import (
 )
 
 func getCallTypeFromName(callName string) int {
-	for cgoType, name := range FlagMap {
+	for cgoType, name := range common.FlagMap {
 		if strings.TrimSuffix(name, "_BEGIN") == callName {
 			return cgoType
 		}
@@ -32,7 +33,7 @@ func (st *stacker) statistic(){
 	for cgoType, c := range st.stStatistic.calls {
 		if c.count > 0 {
 			st.writeLn(fmt.Sprintf("%s | %d | %s | %d ns | %f%%",
-				strings.TrimSuffix(FlagMap[cgoType], "_BEGIN"),
+				strings.TrimSuffix(common.FlagMap[cgoType], "_BEGIN"),
 				c.count,
 				time.Duration(c.totalDuration).String(),
 				c.totalDuration/int64(c.count),
@@ -108,13 +109,13 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 			peekt := st.peekTrace()
 			if peekt == nil {
 				// When the stack is empty
-				fmt.Printf("Stack empty when get %d %s %d\n", r.count, FlagMap[r.cgoType], r.nano)
+				fmt.Printf("Stack empty when get %d %s %d\n", r.count, common.FlagMap[r.cgoType], r.nano)
 				break
 			} else if peekt.raw.cgoType != r.cgoType-1 {
 				// When the top trace mismatch
 				st.stack.Pop()
 				fmt.Printf("Stack mismatch\n\tget %d %s %d\n\tpeek %d %s %d\n",
-					r.count, FlagMap[r.cgoType], r.nano, peekt.raw.count, FlagMap[peekt.raw.cgoType], peekt.raw.nano)
+					r.count, common.FlagMap[r.cgoType], r.nano, peekt.raw.count, common.FlagMap[peekt.raw.cgoType], peekt.raw.nano)
 				continue
 			} else {
 				// Trace matched
@@ -133,9 +134,7 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 	}
 }
 
-const defaultCallToCompare = "GLX_SWAP_BUFFERS"
-
-func cmdStatistic(inputPath string, outPath string, callToCompare1 string, callToCompare2 string) error {
+func CmdStatistic(inputPath string, outPath string, callToCompare1 string, callToCompare2 string) error {
 	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Println("Error when open input trace file: ", err)
@@ -164,9 +163,9 @@ func cmdStatistic(inputPath string, outPath string, callToCompare1 string, callT
 			buf:  make([]*stackTrace, 1000),
 			size: 0,
 		},
-		stStatistic: newStackStatistic(),
-		firstCallToCompare:callToCompare1,
-		secondCallToCompare:callToCompare2,
+		stStatistic:         newStackStatistic(),
+		firstCallToCompare:  callToCompare1,
+		secondCallToCompare: callToCompare2,
 	}
 
 	st.statistic()

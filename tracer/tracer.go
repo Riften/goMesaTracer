@@ -3,6 +3,7 @@ package tracer
 import "C"
 import (
 	"fmt"
+	"github.com/Riften/goMesaTracer/common"
 	"io"
 	"time"
 )
@@ -21,6 +22,7 @@ type Record struct {
 					// It is the position where record from in most cases.
 	// OtherDesp string // Other description. It should be empty in most cases.
 
+	Detail int64 // Detailed number such as size of data buffer or texture usage
 	// TODO: Whether we should add duration in record?
 }
 
@@ -48,17 +50,34 @@ func (t Tracer) AddRecord(cgoType int) {
 	counter += 1
 }
 
-func (t Tracer) WriteRaw(r *Record) {
+func (t Tracer) AddDetail(cgoType int, detail int64) {
+	t.Recv <- &Record{
+		Counter:  counter,
+		CgoType:  cgoType,
+		Detail:  detail,
+	}
+	counter += 1
+}
 
-	// counter cgotype timestamp
-	_, err := t.W.Write([]byte(fmt.Sprintf("%d %d %d\n", r.Counter, r.CgoType, r.TimeStamp)))
+func (t Tracer) WriteRaw(r *Record) {
+	var err error
+	if (r.CgoType > common.Threshold) {
+		_, err = t.W.Write([]byte(fmt.Sprintf("%d %d %d\n", r.Counter, r.CgoType, r.Detail)))
+	} else {
+		// counter cgotype timestamp
+		_, err = t.W.Write([]byte(fmt.Sprintf("%d %d %d\n", r.Counter, r.CgoType, r.TimeStamp)))
+	}
 	if err != nil {
 		fmt.Println("Error when write record back: ", err.Error())
 	}
 }
 
 func (t Tracer) WriteCmd(r *Record) {
-	fmt.Printf("%d %s %d\n", r.Counter, t.FetchFlagName(r.CgoType), r.TimeStamp)
+	if (r.CgoType > common.Threshold) {
+		fmt.Printf("%d %s %d\n", r.Counter, t.FetchFlagName(r.CgoType), r.Detail)
+	} else {
+		fmt.Printf("%d %s %d\n", r.Counter, t.FetchFlagName(r.CgoType), r.TimeStamp)
+	}
 }
 
 // Call Start in a separate goroutine.

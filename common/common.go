@@ -1,9 +1,10 @@
 package common
 
 const DefaultOutFile = "mesa_trace_raw.csv"
-const TotalFlag = 100
+const TotalFlag = 200
 const FlagListFile = "flagList.csv"
 const DefaultCallToCompare = "GLX_SWAP_BUFFERS"
+const Threshold = 100
 
 //const defineFmt = `#define ([A-Z_]+) ([0-9]+)`
 

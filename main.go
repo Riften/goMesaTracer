@@ -80,6 +80,8 @@ package main
 #define VK_BEGIN_COMMAND_BUFFER_END 77
 #define ZINK_CREATE_FRAMEBUF_BEGIN 78
 #define ZINK_CREATE_FRAMEBUF_END 79
+
+#define MESA_BUFFER_DATA 101
 */
 import "C"
 import (
@@ -217,6 +219,11 @@ func cgoStopAndWait() {
 	tracer.GlobalTracer.End()
 	time.Sleep(2 * time.Second) // wait for 2 minute
 	return
+}
+
+//export cgoAddDetail
+func cgoAddDetail(cgoType C.int, detail C.longlong) {
+	tracer.GlobalTracer.AddDetail(int(cgoType), int64(detail))
 }
 
 func main() {

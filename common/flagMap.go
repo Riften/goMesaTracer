@@ -10,6 +10,7 @@ var FlagMap []string // cgoFlag ==> Name of flag
 
 func init() {
 	fmt.Println("Initialize FlagMap from ", FlagListFile)
+	FlagMap = make([]string, TotalFlag)
 	input, err := os.OpenFile(FlagListFile, os.O_RDONLY, 0666)
 	if err != nil {
 		//panic(err)

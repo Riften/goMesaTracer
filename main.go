@@ -219,6 +219,10 @@ func cgoStopAndWait() {
 	return
 }
 
+func getFlagName(cgoType int) string {
+	return FlagMap[cgoType]
+}
+
 func main() {
 	err := Run()
 	if err != nil {

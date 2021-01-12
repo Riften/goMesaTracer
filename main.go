@@ -92,7 +92,7 @@ import (
 
 
 
-var FlagMap = make([]string, common.TotalFlag)
+//var FlagMap = make([]string, common.TotalFlag)
 
 func init() {
 	var err error
@@ -116,7 +116,7 @@ func init() {
 			panic(err)
 		}
 	}
-
+	/*
 	fmt.Println("Init flag map.")
 	FlagMap[C.CGO_START] = "Trace_Start"
 	FlagMap[C.CGO_END] = "Trace_End"
@@ -198,9 +198,9 @@ func init() {
 	FlagMap[C.VK_BEGIN_COMMAND_BUFFER_END] = "VK_BEGIN_COMMAND_BUFFER_END"
 	FlagMap[C.ZINK_CREATE_FRAMEBUF_BEGIN] = "ZINK_CREATE_FRAMEBUF_BEGIN"
 	FlagMap[C.ZINK_CREATE_FRAMEBUF_END] = "ZINK_CREATE_FRAMEBUF_END"
-
+	*/
 	tracer.GlobalTracer.FetchFlagName = func(cgoType int) string {
-		return FlagMap[cgoType]
+		return common.FlagMap[cgoType]
 	}
 	fmt.Println("Initialize main routine")
 	go tracer.GlobalTracer.Start()
@@ -217,10 +217,6 @@ func cgoStopAndWait() {
 	tracer.GlobalTracer.End()
 	time.Sleep(2 * time.Second) // wait for 2 minute
 	return
-}
-
-func getFlagName(cgoType int) string {
-	return FlagMap[cgoType]
 }
 
 func main() {

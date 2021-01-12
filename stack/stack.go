@@ -8,7 +8,6 @@ import (
 	"io"
 	"os"
 	"path"
-	"sort"
 	"strings"
 )
 
@@ -79,44 +78,35 @@ type stacker struct {
 	stack *lls.Stack
 
 	writeBuf *stackWriteBuf
+	full bool
 	stStatistic *stackStatistic
 
 	firstCallToCompare string
 	secondCallToCompare string
 }
 
-// NOT THREAD SAFE!!
-type stackWriteBuf struct {
-	buf []*stackTrace
-	size int
-	// out io.Writer
-}
-
-func (wf *stackWriteBuf) add(st *stackTrace) {
-	wf.buf[wf.size] = st
-	wf.size += 1
-}
-
-// Let stackWriteBuf sortable
-func (wf *stackWriteBuf) Len() int {
-	return wf.size
-}
-
-func (wf *stackWriteBuf) Swap(i, j int) {
-	wf.buf[i], wf.buf[j] = wf.buf[j], wf.buf[i]
-}
-
-func (wf *stackWriteBuf) Less(i, j int) bool {
-	return wf.buf[i].raw.count < wf.buf[j].raw.count
-}
-
-func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
-	sort.Sort(wf)
-	for i:=0 ; i<wf.size; i+=1{
-		//fmt.Println("...", FlagMap[curTrace.raw.cgoType])
-		handleWrite(wf.buf[i])
+func newStacker(src io.Reader, dest io.Writer, _full bool) *stacker {
+	st := &stacker{
+		dest:  dest,
+		src:   src,
+		full: _full,
+		stack: lls.New(),
+		writeBuf: &stackWriteBuf{
+			buf:  make([]*stackTrace, 1000),
+			size: 0,
+		},
 	}
-	wf.size = 0
+	return st
+}
+
+func (st *stacker) setFirstCompareCall(c string) *stacker {
+	st.firstCallToCompare = c
+	return st
+}
+
+func (st *stacker) setSecondCompareCall(c string) *stacker {
+	st.secondCallToCompare = c
+	return st
 }
 
 func (st *stacker) writeLn(str string) {
@@ -138,7 +128,73 @@ func (st *stacker) writeTrace(tr *stackTrace) {
 }
 
 func (st *stacker) analyze() {
+	if st.full {
+		fmt.Println("Stacker is running in full mode, which may be a bit slow but safer.")
+	}
+
 	scanTrace(st.src, st.handleRawTrace)
+}
+
+// used to handle each raw trace when running in full mode.
+func (st *stacker) handleRawTraceFull(r *rawTrace) {
+	if r.cgoType == 0 {
+		st.writeLn(common.FlagMap[0])
+		return
+	}
+	if r.cgoType == 1 {
+		st.writeLn(common.FlagMap[1])
+		return
+	}
+
+	// monitor stack process:
+	if r.count % 100 == 0 {
+		fmt.Printf("Process line %d\r", r.count)
+	}
+
+	if r.cgoType % 2 == 0 {
+		peekt := st.peekTrace()
+		var dep int
+		if peekt==nil {
+			dep = 0
+		} else {
+			dep = peekt.depth + 1
+		}
+
+		st.stack.Push(&stackTrace{
+			raw:      r,
+			depth:    dep,
+			duration: 0, 	// duration is computed when pop stack
+			startTime: r.nano,
+		})
+	} else {
+		for	{
+			peekt := st.peekTrace()
+			if peekt == nil {
+				// When the stack is empty
+				fmt.Printf("Stack empty when get %d %s %d\n", r.count, common.FlagMap[r.cgoType], r.nano)
+				break
+			} else if peekt.raw.cgoType != r.cgoType-1 {
+				// When the top trace mismatch
+				st.stack.Pop()
+				fmt.Printf("Stack mismatch\n\tget %d %s %d\n\tpeek %d %s %d\n",
+					r.count, common.FlagMap[r.cgoType], r.nano, peekt.raw.count, common.FlagMap[peekt.raw.cgoType], peekt.raw.nano)
+				continue
+			} else {
+				// Trace matched
+				st.stack.Pop()
+				peekt.duration = r.nano - peekt.raw.nano
+				peekt.endTime = r.nano
+				st.writeBuf.add(peekt)
+				//st.writeBuf[st.bufSize] = peekt
+				//st.bufSize += 1
+
+				if st.stack.Empty() {
+					st.writeBuf.flush(st.writeTrace)
+				}
+				break
+			}
+		}
+	}
 }
 
 func (st *stacker) handleRawTrace(r *rawTrace) {
@@ -211,7 +267,7 @@ func (st *stacker) peekTrace() *stackTrace {
 }
 
 // Used to analyze the call stack from trace
-func CmdStack(inputPath string, outPath string) error {
+func CmdStack(inputPath string, outPath string, full bool) error {
 	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Println("Error when open input trace file: ", err)
@@ -232,16 +288,8 @@ func CmdStack(inputPath string, outPath string) error {
 		return err
 	}
 	// do rw
-	st := &stacker{
-		dest:  outFile,
-		src:   inFile,
-		stack: lls.New(),
-		writeBuf: &stackWriteBuf{
-			buf:  make([]*stackTrace, 1000),
-			size: 0,
-		},
-	}
 
+	st := newStacker(inFile, outFile, full)
 	st.analyze()
 
 	inFile.Close()

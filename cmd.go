@@ -21,8 +21,9 @@ func Run() error {
 	stackCmd := appCmd.Command("stack", "Reconstruct the call stack from trace.")
 	stackInFile := stackCmd.Flag("input", "Input trace file.").Short('i').Default(common.DefaultOutFile).String()
 	stackOutFile := stackCmd.Flag("output", "Out stack file.").Short('o').String()
+	stackFull := stackCmd.Flag("full", "Analyze the trace in full mode or not.").Bool()
 	cmds[stackCmd.FullCommand()] = func() error {
-		return stack.CmdStack(*stackInFile, *stackOutFile)
+		return stack.CmdStack(*stackInFile, *stackOutFile, *stackFull)
 	}
 
 	statisticCmd := appCmd.Command("statistic", "Statistics average duration for different calls.")

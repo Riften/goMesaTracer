@@ -6,6 +6,7 @@ lib:
 	go build -buildmode c-shared -o build/libMesaTracer.so github.com/Riften/goMesaTracer
 tracer:
 	go build -o build/tracer github.com/Riften/goMesaTracer
+	grep "#define" main.go > build/flagList.csv
 install:
 	sudo mkdir -p /usr/local/include/CGO
 	sudo cp build/libMesaTracer.h /usr/local/include/CGO/

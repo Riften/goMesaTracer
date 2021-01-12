@@ -48,6 +48,13 @@ func Run() error {
 		return cmdTranslate(*transInFile, *transOutFile)
 	}
 
+	testCmd := appCmd.Command("test", "Used to test some functionality.")
+	testFlagMap := testCmd.Command("flagMap", "Try to extract and printout FlagMap.")
+	cmds[testFlagMap.FullCommand()] = func() error {
+		common.OutFlagMap()
+		return nil
+	}
+
 	cmd := kingpin.MustParse(appCmd.Parse(os.Args[1:]))
 	for key, value := range cmds {
 		if key == cmd {

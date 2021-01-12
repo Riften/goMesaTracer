@@ -12,7 +12,10 @@ func init() {
 	fmt.Println("Initialize FlagMap from ", FlagListFile)
 	input, err := os.OpenFile(FlagListFile, os.O_RDONLY, 0666)
 	if err != nil {
-		panic(err)
+		//panic(err)
+		fmt.Println("Warning: Open flag list file failed: ", err)
+		fmt.Println("Tracer may run without flag map")
+		return
 	}
 	defer input.Close()
 
@@ -38,10 +41,10 @@ func init() {
 			FlagMap[cgoType] = cgoName
 		}
 	}
-	outFlagMap()
+	//outFlagMap()
 }
 
-func outFlagMap() {
+func OutFlagMap() {
 	for cgoType, cgoName := range FlagMap {
 		if cgoName != "" {
 			fmt.Println(cgoType, "\t==>\t", cgoName)

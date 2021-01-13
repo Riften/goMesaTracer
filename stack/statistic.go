@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var hasDetail = false
+
 func getCallTypeFromName(callName string) int {
 	for cgoType, name := range common.FlagMap {
 		if strings.TrimSuffix(name, "_BEGIN") == callName {
@@ -31,6 +33,9 @@ func (st *stacker) statistic(){
 	st.writeLn("Flag Name | Count | Total Duration | Average Duration | Duration ratio")
 	st.writeLn("- | - | - | - | -")
 	for cgoType, c := range st.stStatistic.calls {
+		if cgoType > common.Threshold {
+			break
+		}
 		if c.count > 0 {
 			st.writeLn(fmt.Sprintf("%s | %d | %s | %d ns | %f%%",
 				strings.TrimSuffix(common.FlagMap[cgoType], "_BEGIN"),
@@ -62,10 +67,36 @@ func (st *stacker) comparison(){
 	st.writeLn(fmt.Sprintf("- Duration: %s / Total = %f%%",
 		st.firstCallToCompare,
 		100*float64(st.stStatistic.calls[firstCallType].totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
+	st.writeLn("")
 
 }
 
+func (st *stacker) detail(){
+	st.writeLn("## Call parameter detail infos")
+	st.writeLn("Call Name | Count | Total Detail Number | Average Detail Number")
+	st.writeLn("- | - | - | -")
+	for cgoType, c :=range st.stStatistic.calls {
+		if cgoType <= common.Threshold {
+			continue
+		}
+		if c.count > 0 {
+			st.writeLn(fmt.Sprintf("%s | %d | %d | %d",
+				common.FlagMap[cgoType],
+				c.count,
+				c.totalDetail,
+				c.totalDetail/int64(c.count)))
+		}
+	}
+}
+
 func (st *stacker) statisticRawTrace(r *rawTrace) {
+	if r.cgoType > common.Threshold {
+		hasDetail = true
+		st.stStatistic.calls[r.cgoType].count += 1
+		st.stStatistic.calls[r.cgoType].totalDetail += r.nano
+		return
+	}
+
 	if r.nano > st.stStatistic.endTime {
 		st.stStatistic.endTime = r.nano
 	}

@@ -38,6 +38,7 @@ type callStatistic struct {
 	count int
 	totalDuration int64
 	avgDuration int64
+	totalDetail int64
 }
 
 func newStackStatistic() *stackStatistic {
@@ -46,6 +47,7 @@ func newStackStatistic() *stackStatistic {
 		c.totalDuration = 0
 		c.count = 0
 		c.avgDuration = 0
+		c.totalDetail = 0
 	}
 	return &stackStatistic{
 		calls:     _calls,
@@ -137,6 +139,11 @@ func (st *stacker) analyze() {
 
 // used to handle each raw trace when running in full mode.
 func (st *stacker) handleRawTraceFull(r *rawTrace) {
+	// skip if r is a detailed type tracer\
+	if r.cgoType > common.Threshold {
+		return
+	}
+
 	if r.cgoType == 0 {
 		st.writeLn(common.FlagMap[0])
 		return
@@ -198,6 +205,11 @@ func (st *stacker) handleRawTraceFull(r *rawTrace) {
 }
 
 func (st *stacker) handleRawTrace(r *rawTrace) {
+	// skip if r is a detailed type tracer\
+	if r.cgoType > common.Threshold {
+		return
+	}
+
 	if r.cgoType == 0 {
 		st.writeLn(common.FlagMap[0])
 		return

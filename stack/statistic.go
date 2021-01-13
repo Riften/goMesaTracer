@@ -208,6 +208,15 @@ func CmdStatistic(inputPath string, outPath string, callToCompare1 string, callT
 		fmt.Println("No second call to be compared. No comparison to do")
 	}
 
+	// do detail
+	if hasDetail {
+		st.detail()
+	} else {
+		fmt.Println("No call parameter detail to be shown. No detail to do")
+	}
+
+
+
 	inFile.Close()
 	outFile.Close()
 	return nil

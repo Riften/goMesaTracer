@@ -22,6 +22,8 @@ func getCallTypeFromName(callName string) int {
 }
 
 func (st *stacker) statistic(){
+	var swapCount int = st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
+
 	scanTrace(st.src, st.statisticRawTrace)
 	st.writeLn("## Basic infos")
 	st.writeLn(fmt.Sprintf("- Start: %s", time.Unix(0, st.stStatistic.startTime).Format("2006-01-02 15:04:05")))
@@ -30,19 +32,21 @@ func (st *stacker) statistic(){
 	st.writeLn(fmt.Sprintf("- Time extracted %s", time.Duration(st.stStatistic.busyTime).String()))
 	st.writeLn("")
 	st.writeLn("## Info for different call")
-	st.writeLn("Flag Name | Count | Total Duration | Average Duration | Duration ratio")
-	st.writeLn("- | - | - | - | -")
+	st.writeLn("Flag Name | Count | Total Duration | Average Duration | Duration ratio | Per second | Per swapbuf")
+	st.writeLn("- | - | - | - | - | - | -")
 	for cgoType, c := range st.stStatistic.calls {
 		if cgoType > common.Threshold {
 			break
 		}
 		if c.count > 0 {
-			st.writeLn(fmt.Sprintf("%s | %d | %s | %d ns | %f%%",
+			st.writeLn(fmt.Sprintf("%s | %d | %s | %d ns | %f%% | %f | %f",
 				strings.TrimSuffix(common.FlagMap[cgoType], "_BEGIN"),
 				c.count,
 				time.Duration(c.totalDuration).String(),
 				c.totalDuration/int64(c.count),
-				100*float64(c.totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
+				100*float64(c.totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime),
+				float64(c.count)/float64((st.stStatistic.endTime - st.stStatistic.startTime)/1e9),
+				float64(c.count)/float64(swapCount)))
 		}
 	}
 	st.writeLn("")
@@ -72,19 +76,23 @@ func (st *stacker) comparison(){
 }
 
 func (st *stacker) detail(){
+	var swapCount int = st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
+
 	st.writeLn("## Call parameter detail infos")
-	st.writeLn("Call Name | Count | Total Detail Number | Average Detail Number")
-	st.writeLn("- | - | - | -")
+	st.writeLn("Call Name | Count | Total Detail Number | Average Detail Number | Per second | Per swapbuf")
+	st.writeLn("- | - | - | - | - | -")
 	for cgoType, c :=range st.stStatistic.calls {
 		if cgoType <= common.Threshold {
 			continue
 		}
 		if c.count > 0 {
-			st.writeLn(fmt.Sprintf("%s | %d | %d | %d",
+			st.writeLn(fmt.Sprintf("%s | %d | %d | %d | %d | %d",
 				common.FlagMap[cgoType],
 				c.count,
 				c.totalDetail,
-				c.totalDetail/int64(c.count)))
+				c.totalDetail/int64(c.count),
+				c.totalDetail/((st.stStatistic.endTime - st.stStatistic.startTime)/1e9),
+				c.totalDetail/int64(swapCount)))
 		}
 	}
 }

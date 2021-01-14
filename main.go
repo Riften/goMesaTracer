@@ -97,8 +97,6 @@ import (
 	"time"
 )
 
-
-
 //var FlagMap = make([]string, common.TotalFlag)
 
 func init() {

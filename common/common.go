@@ -6,6 +6,7 @@ const FlagListFile = "flagList.csv"
 const DefaultCallToCompare = "GLX_SWAP_BUFFERS"
 const Threshold = 100
 
+const GLX_SWAP_BUFFERS_FLAG = 30
 //const defineFmt = `#define ([A-Z_]+) ([0-9]+)`
 
 // Package common contains the common interfaces used by other module.

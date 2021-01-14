@@ -22,7 +22,7 @@ func getCallTypeFromName(callName string) int {
 }
 
 func (st *stacker) statistic(){
-	var swapCount int = st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
+	swapCount := st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
 	fmt.Println("Swap Count ", swapCount)
 	scanTrace(st.src, st.statisticRawTrace)
 	st.writeLn("## Basic infos")

@@ -42,7 +42,7 @@ func init() {
 			FlagMap[cgoType] = cgoName
 		}
 	}
-	OutFlagMap()
+	//OutFlagMap()
 }
 
 func OutFlagMap() {

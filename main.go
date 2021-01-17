@@ -150,11 +150,6 @@ func cgoAddDetail(cgoType C.int, detail C.longlong) {
 	tracer.GlobalTracer.AddDetail(int(cgoType), int64(detail))
 }
 
-//export cgoAddUlonglong
-func cgoAddUlonglong(cgoType C.int, value C.ulonglong) {
-
-}
-
 //export cgoAddDoubleInt
 func cgoAddDoubleInt(cgoType C.int, i1 C.int, i2 C.int) {
 	tracer.GlobalTracer.AddDetail(int(cgoType), int64(i1 * i2))

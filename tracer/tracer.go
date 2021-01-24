@@ -32,6 +32,9 @@ type Tracer struct {
 	Endch chan interface{}
 	OutCmdOnly bool		// Whether print the trace to command line only.
 						// It would be true if the os environment MESA_TRACE_CMD_ONLY is not empty.
+	NoOut bool 		// Run with no output.
+					// It would be true if the os environment MESA_TRACE_NO_OUT is not empty.
+
 	FetchFlagName func(int) string	// Used to fetch name string of cgoType.
 }
 
@@ -80,6 +83,10 @@ func (t Tracer) WriteCmd(r *Record) {
 	}
 }
 
+func (t Tracer) DoNothing(r *Record) {
+
+}
+
 // Call Start in a separate goroutine.
 // Note:
 //		The priority of case is higher than default in go.
@@ -89,6 +96,8 @@ func (t Tracer) Start() {
 	var writeFunc func(*Record)
 	if t.OutCmdOnly {
 		writeFunc = t.WriteCmd
+	} else if t.NoOut {
+		writeFunc = t.DoNothing
 	} else {
 		writeFunc = t.WriteRaw
 	}

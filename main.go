@@ -124,9 +124,13 @@ func init() {
 	var err error
 
 	mesaCmdOnly := os.Getenv("MESA_TRACE_CMD_ONLY")
+	mesaNoOut := os.Getenv("MESA_TRACE_NO_OUT")
 	if mesaCmdOnly != "" {
 		tracer.GlobalTracer.OutCmdOnly = true
 		fmt.Println("Cgo trace would be print out to command line only")
+	} else if mesaNoOut != "" {
+		tracer.GlobalTracer.NoOut = true
+		fmt.Println("Cgo trace would have no output.")
 	} else {
 		tracer.GlobalTracer.OutCmdOnly = false
 		filePath := os.Getenv("MESA_TRACE_OUT")

@@ -4,14 +4,14 @@ import "sort"
 
 // NOT THREAD SAFE!!
 type stackWriteBuf struct {
-	buf []*stackTrace
+	buf  []*stackTrace
 	size int
 	// out io.Writer
 }
 
 func (wf *stackWriteBuf) add(st *stackTrace) {
 	wf.buf[wf.size] = st
-	wf.size += 1
+	wf.size++
 }
 
 // Let stackWriteBuf sortable
@@ -29,7 +29,7 @@ func (wf *stackWriteBuf) Less(i, j int) bool {
 
 func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
 	sort.Sort(wf)
-	for i:=0 ; i<wf.size; i+=1{
+	for i := 0; i < wf.size; i++ {
 		//fmt.Println("...", FlagMap[curTrace.raw.cgoType])
 		handleWrite(wf.buf[i])
 	}
@@ -39,5 +39,4 @@ func (wf *stackWriteBuf) flush(handleWrite func(trace *stackTrace)) {
 // Used as stack buffer when running in `stack full` mode
 // stackFull is a re
 type stackFullBuf struct {
-
 }

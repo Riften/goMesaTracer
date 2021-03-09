@@ -3,30 +3,31 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/Riften/goMesaTracer/common"
 	"io"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/Riften/goMesaTracer/common"
 )
 
 func scanAndTranslate(input io.Reader, output io.Writer) {
 	scanner := bufio.NewScanner(input)
-	var n_scan int
+	var nScan int
 	var err error
 	var count int
 	var cgoType int
 	var nano int64
 	for scanner.Scan() {
-		n_scan, err = fmt.Sscanf(scanner.Text(), "%d %d %d", &count, &cgoType, &nano)
+		nScan, err = fmt.Sscanf(scanner.Text(), "%d %d %d", &count, &cgoType, &nano)
 		if err != nil {
 			fmt.Println("Error when scan line: ", err)
-		} else if n_scan==0 {
+		} else if nScan == 0 {
 			fmt.Println("Error: Sscanf parsed no param.")
 		} else {
 
-			if count % 100 == 0 {
+			if count%100 == 0 {
 				fmt.Printf("%d\r", count)
 			}
 

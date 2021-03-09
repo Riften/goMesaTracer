@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// FlagMap ...
 var FlagMap []string // cgoFlag ==> Name of flag
 
 func init() {
@@ -25,7 +26,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	 */
+	*/
 
 	var nScan int
 	var cgoType int
@@ -36,7 +37,7 @@ func init() {
 		nScan, err = fmt.Sscanf(scanner.Text(), "#define %s %d", &cgoName, &cgoType)
 		if err != nil {
 			fmt.Println("Error when scan line: ", err)
-		} else if nScan<2 {
+		} else if nScan < 2 {
 			fmt.Println("Error: Sscanf parsed few param.")
 		} else {
 			FlagMap[cgoType] = cgoName
@@ -45,6 +46,7 @@ func init() {
 	//OutFlagMap()
 }
 
+// OutFlagMap ...
 func OutFlagMap() {
 	for cgoType, cgoName := range FlagMap {
 		if cgoName != "" {

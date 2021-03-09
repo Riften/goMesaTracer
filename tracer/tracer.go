@@ -7,12 +7,14 @@ import (
 	"time"
 )
 
+// Record ...
 type Record struct {
 	Counter   int
 	FuncName  string
 	TimeStamp int64
 }
 
+// Tracer ...
 type Tracer struct {
 	Recv       chan *Record
 	W          io.Writer
@@ -25,12 +27,14 @@ type Tracer struct {
 	FetchFlagName func(int) string // Used to fetch name string of cgoType.
 }
 
+// GlobalTracer ...
 // Make the buffer large enough so that the tracer would not block the main thread.
 var GlobalTracer Tracer = Tracer{
 	Recv:  make(chan *Record, 1000),
 	Endch: make(chan interface{}),
 }
 
+// AddRecord ...
 func (t Tracer) AddRecord(counter int, funcName string) {
 	t.Recv <- &Record{
 		Counter:   counter,
@@ -39,6 +43,7 @@ func (t Tracer) AddRecord(counter int, funcName string) {
 	}
 }
 
+// WriteRaw ...
 func (t Tracer) WriteRaw(r *Record) {
 	var err error
 	_, err = t.W.Write([]byte(fmt.Sprintf("%d %s %d\n", r.Counter, r.FuncName, r.TimeStamp)))
@@ -47,14 +52,17 @@ func (t Tracer) WriteRaw(r *Record) {
 	}
 }
 
+// WriteCmd ...
 func (t Tracer) WriteCmd(r *Record) {
 	fmt.Printf("%d %s %d\n", r.Counter, r.FuncName, r.TimeStamp)
 }
 
+// DoNothing ...
 func (t Tracer) DoNothing(r *Record) {
 
 }
 
+// Start ...
 // Call Start in a separate goroutine.
 // Note:
 //		The priority of case is higher than default in go.
@@ -93,6 +101,7 @@ func (t Tracer) Start() {
 	}
 }
 
+// End ...
 // Call End when there is nothing more to trace.
 func (t Tracer) End() {
 	t.Endch <- struct{}{}

@@ -33,8 +33,6 @@ cgoAddTrace(int counter, char* funcName);
 cgoStopAndWait();
 ```
 
-`CgoType` is defined in `main.go` as macro definition.
-
 ## Build & Run Sample Progarm
 Build
 ```shell

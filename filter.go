@@ -3,15 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/Riften/goMesaTracer/common"
 	"io"
 	"os"
+
+	"github.com/Riften/goMesaTracer/common"
 )
 
 type filter struct {
 	flags []bool
-	dest io.Writer
-	src io.Reader
+	dest  io.Writer
+	src   io.Reader
 }
 
 func newFilterFromReader(src io.Reader) []bool {
@@ -25,7 +26,7 @@ func newFilterFromReader(src io.Reader) []bool {
 		nScan, err = fmt.Sscanf(scanner.Text(), "%d", &cgoType)
 		if err != nil {
 			fmt.Println("Error when scan line: ", err)
-		} else if nScan==0 {
+		} else if nScan == 0 {
 			fmt.Println("Error: Sscanf parsed no param.")
 			continue
 		}
@@ -47,7 +48,6 @@ func cmdFilter(inPath string, outPath string) error {
 			fmt.Println("Error when close input trace file: ", err)
 		}
 	}()
-
 
 	return nil
 }

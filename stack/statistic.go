@@ -2,12 +2,13 @@ package stack
 
 import (
 	"fmt"
-	"github.com/Riften/goMesaTracer/common"
-	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 	"os"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/Riften/goMesaTracer/common"
+	lls "github.com/emirpasic/gods/stacks/linkedliststack"
 )
 
 var hasDetail = false
@@ -21,15 +22,15 @@ func getCallTypeFromName(callName string) int {
 	return -1
 }
 
-func (st *stacker) statistic(){
+func (st *stacker) statistic() {
 	scanTrace(st.src, st.statisticRawTrace)
 
-	swapCount := st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
+	swapCount := st.stStatistic.calls[common.GlxSwapBuffersFlag].count
 
 	st.writeLn("## Basic infos")
 	st.writeLn(fmt.Sprintf("- Start: %s", time.Unix(0, st.stStatistic.startTime).Format("2006-01-02 15:04:05")))
 	st.writeLn(fmt.Sprintf("- End: %s", time.Unix(0, st.stStatistic.endTime).Format("2006-01-02 15:04:05")))
-	st.writeLn(fmt.Sprintf("- Total duration: %s", time.Duration(st.stStatistic.endTime - st.stStatistic.startTime).String()))
+	st.writeLn(fmt.Sprintf("- Total duration: %s", time.Duration(st.stStatistic.endTime-st.stStatistic.startTime).String()))
 	st.writeLn(fmt.Sprintf("- Time extracted %s", time.Duration(st.stStatistic.busyTime).String()))
 	st.writeLn("")
 	st.writeLn("## Info for different call")
@@ -45,15 +46,15 @@ func (st *stacker) statistic(){
 				c.count,
 				time.Duration(c.totalDuration).String(),
 				c.totalDuration/int64(c.count),
-				100*float64(c.totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime),
-				float64(c.count)/float64((st.stStatistic.endTime - st.stStatistic.startTime)/1e9),
+				100*float64(c.totalDuration)/float64(st.stStatistic.endTime-st.stStatistic.startTime),
+				float64(c.count)/float64((st.stStatistic.endTime-st.stStatistic.startTime)/1e9),
 				float64(c.count)/float64(swapCount)))
 		}
 	}
 	st.writeLn("")
 }
 
-func (st *stacker) comparison(){
+func (st *stacker) comparison() {
 	firstCallType := getCallTypeFromName(st.firstCallToCompare)
 	secondCallType := getCallTypeFromName(st.secondCallToCompare)
 	if firstCallType == -1 || secondCallType == -1 {
@@ -71,18 +72,18 @@ func (st *stacker) comparison(){
 		float64(st.stStatistic.calls[firstCallType].count)/float64(st.stStatistic.calls[secondCallType].count)))
 	st.writeLn(fmt.Sprintf("- Duration: %s / Total = %f%%",
 		st.firstCallToCompare,
-		100*float64(st.stStatistic.calls[firstCallType].totalDuration)/float64(st.stStatistic.endTime - st.stStatistic.startTime)))
+		100*float64(st.stStatistic.calls[firstCallType].totalDuration)/float64(st.stStatistic.endTime-st.stStatistic.startTime)))
 	st.writeLn("")
 
 }
 
-func (st *stacker) detail(){
-	var swapCount int = st.stStatistic.calls[common.GLX_SWAP_BUFFERS_FLAG].count
+func (st *stacker) detail() {
+	var swapCount int = st.stStatistic.calls[common.GlxSwapBuffersFlag].count
 
 	st.writeLn("## Call parameter detail infos")
 	st.writeLn("Call Name | Count | Total Detail Number | Average Detail Number | Per second | Per swapbuf")
 	st.writeLn("- | - | - | - | - | -")
-	for cgoType, c :=range st.stStatistic.calls {
+	for cgoType, c := range st.stStatistic.calls {
 		if cgoType <= common.Threshold {
 			continue
 		}
@@ -92,7 +93,7 @@ func (st *stacker) detail(){
 				c.count,
 				c.totalDetail,
 				c.totalDetail/int64(c.count),
-				c.totalDetail/((st.stStatistic.endTime - st.stStatistic.startTime)/1e9),
+				c.totalDetail/((st.stStatistic.endTime-st.stStatistic.startTime)/1e9),
 				c.totalDetail/int64(swapCount)))
 		}
 	}
@@ -101,7 +102,7 @@ func (st *stacker) detail(){
 func (st *stacker) statisticRawTrace(r *rawTrace) {
 	if r.cgoType > common.Threshold {
 		hasDetail = true
-		st.stStatistic.calls[r.cgoType].count += 1
+		st.stStatistic.calls[r.cgoType].count++
 		st.stStatistic.calls[r.cgoType].totalDetail += r.nano
 		return
 	}
@@ -125,27 +126,27 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 	}
 
 	// monitor stack process:
-	if r.count % 100 == 0 {
+	if r.count%100 == 0 {
 		fmt.Printf("Process line %d\r", r.count)
 	}
 
-	if r.cgoType % 2 == 0 {
+	if r.cgoType%2 == 0 {
 		peekt := st.peekTrace()
 		var dep int
-		if peekt==nil {
+		if peekt == nil {
 			dep = 0
 		} else {
 			dep = peekt.depth + 1
 		}
 
 		st.stack.Push(&stackTrace{
-			raw:      r,
-			depth:    dep,
-			duration: 0, 	// duration is computed when pop stack
+			raw:       r,
+			depth:     dep,
+			duration:  0, // duration is computed when pop stack
 			startTime: r.nano,
 		})
 	} else {
-		for	{
+		for {
 			peekt := st.peekTrace()
 			if peekt == nil {
 				// When the stack is empty
@@ -163,7 +164,7 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 				peekt.duration = r.nano - peekt.raw.nano
 				peekt.endTime = r.nano
 
-				st.stStatistic.calls[peekt.raw.cgoType].count += 1
+				st.stStatistic.calls[peekt.raw.cgoType].count++
 				st.stStatistic.calls[peekt.raw.cgoType].totalDuration += peekt.duration
 				if st.stack.Empty() {
 					st.stStatistic.busyTime += peekt.duration
@@ -174,6 +175,7 @@ func (st *stacker) statisticRawTrace(r *rawTrace) {
 	}
 }
 
+// CmdStatistic ...
 func CmdStatistic(inputPath string, outPath string, callToCompare1 string, callToCompare2 string) error {
 	inFile, err := os.OpenFile(inputPath, os.O_RDONLY, 0666)
 	if err != nil {
@@ -223,8 +225,6 @@ func CmdStatistic(inputPath string, outPath string, callToCompare1 string, callT
 	} else {
 		fmt.Println("No call parameter detail to be shown. No detail to do")
 	}
-
-
 
 	inFile.Close()
 	outFile.Close()

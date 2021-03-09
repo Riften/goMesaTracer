@@ -9,6 +9,7 @@ LIB_DIR ?= lib
 lib:
 	mkdir -p ${BUILD_DIR}
 	go build -buildmode c-shared -o ${BUILD_DIR}/libMesaTracer.so github.com/Riften/goMesaTracer
+	sed -i "s/extern void cgoAddTrace(int p0, char\* p1);/extern void cgoAddTrace(int p0, const char\* p1);/g" ${BUILD_DIR}/libMesaTracer.h
 
 tracer:
 	mkdir -p ${BUILD_DIR}

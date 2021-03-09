@@ -1,17 +1,15 @@
 # goMesaTracer
 A tracer and analyzer for glmark2 and mesa writen in golang.
 
-中文完整工具目的、使用见[笔记](https://github.com/Riften/OpenGL-Notes/blob/master/TraceMesa.md)。
-
 ## Build Shared Library
 **Linux Only**
 
 | Variable | Explanation |
 |---|---|
 | BUILD_DIR | The build dest folder, default is `build` |
-| PREFIX | The prefix folder to install CGO, default is `~/.local` |
-| INCLUDE_DIR | The header files will be copied to this folder, default is `${PREFIX}/include/CGO` |
-| LIB_DIR | The lib files will be copied to this folder, default is `${PREFIX}/lib/CGO` |
+| PREFIX | The prefix folder to install CGO, default is `$HOME/.local` |
+| INCLUDE_DIR | The header files will be copied to this folder, default is `$PREFIX/include/CGO` |
+| LIB_DIR | The lib files will be copied to this folder, default is `$PREFIX/lib/CGO` |
 
 ```shell
 make lib
@@ -29,7 +27,7 @@ make install
 #include <CGO/libMesaTracer.h>
 
 // When you need to add a trace
-cgoAddTrace(<CgoType>);
+cgoAddTrace(int counter, char* funcName);
 
 // After the last trace
 cgoStopAndWait();

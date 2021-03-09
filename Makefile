@@ -13,7 +13,6 @@ lib:
 tracer:
 	mkdir -p ${BUILD_DIR}
 	go build -o ${BUILD_DIR}/tracer github.com/Riften/goMesaTracer
-	grep "#define" main.go > ${BUILD_DIR}/flagList.csv
 
 install:
 	mkdir -p ${PREFIX}/${INCLUDE_DIR}/${NAME}

@@ -16,10 +16,10 @@ tracer:
 	grep "#define" main.go > ${BUILD_DIR}/flagList.csv
 
 install:
-	mkdir -p ${PREFIX}/{INCLUDE_DIR}/{NAME}
-	mkdir -p ${PREFIX}/{LIB_DIR}/{NAME}
-	cp ${BUILD_DIR}/libMesaTracer.h ${PREFIX}/{INCLUDE_DIR}/{NAME}/
-	cp ${BUILD_DIR}/libMesaTracer.so ${PREFIX}/{LIB_DIR}/{NAME}/
+	mkdir -p ${PREFIX}/${INCLUDE_DIR}/${NAME}
+	mkdir -p ${PREFIX}/${LIB_DIR}/${NAME}
+	cp ${BUILD_DIR}/libMesaTracer.h ${PREFIX}/${INCLUDE_DIR}/${NAME}/
+	cp ${BUILD_DIR}/libMesaTracer.so ${PREFIX}/${LIB_DIR}/${NAME}/
 
 all: lib tracer
 	echo "DONE"

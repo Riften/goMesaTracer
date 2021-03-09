@@ -1,18 +1,25 @@
-.PHONY: lib
-.PHONY: install
-.PHONY: tracer
-.PHONY: inject
+.PHONY: lib tracer install
+
+NAME ?= CGO
+BUILD_DIR ?= build
+PREFIX ?= ${HOME}/.local
+INCLUDE_DIR ?= include
+LIB_DIR ?= lib
+
 lib:
-	go build -buildmode c-shared -o build/libMesaTracer.so github.com/Riften/goMesaTracer
+	mkdir -p ${BUILD_DIR}
+	go build -buildmode c-shared -o ${BUILD_DIR}/libMesaTracer.so github.com/Riften/goMesaTracer
+
 tracer:
-	go build -o build/tracer github.com/Riften/goMesaTracer
-	grep "#define" main.go > build/flagList.csv
+	mkdir -p ${BUILD_DIR}
+	go build -o ${BUILD_DIR}/tracer github.com/Riften/goMesaTracer
+	grep "#define" main.go > ${BUILD_DIR}/flagList.csv
+
 install:
-	sudo mkdir -p /usr/local/include/CGO
-	sudo cp build/libMesaTracer.h /usr/local/include/CGO/
-	chmod +x build/libMesaTracer.so
-	sudo cp build/libMesaTracer.so /usr/local/lib/x86_64-linux-gnu/
-	sudo rm -f /usr/local/lib/libMesaTracer.so
-	sudo ln -s /usr/local/lib/x86_64-linux-gnu/libMesaTracer.so /usr/local/lib/libMesaTracer.so
-all: lib tracer install
+	mkdir -p ${PREFIX}/{INCLUDE_DIR}/{NAME}
+	mkdir -p ${PREFIX}/{LIB_DIR}/{NAME}
+	cp ${BUILD_DIR}/libMesaTracer.h ${PREFIX}/{INCLUDE_DIR}/{NAME}/
+	cp ${BUILD_DIR}/libMesaTracer.so ${PREFIX}/{LIB_DIR}/{NAME}/
+
+all: lib tracer
 	echo "DONE"
